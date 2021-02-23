@@ -1,0 +1,11 @@
+.message-read-info {
+  margin-right: 7px;
+  color: rgba(115, 90, 160, 0.5);
+}
+.message-read-info i {
+  font-size: 11px;
+  margin-right: -5px;
+}
+.message-read-info-selected {
+  color: rgb(115, 90, 160) !important;
+}

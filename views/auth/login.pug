@@ -1,0 +1,16 @@
+extends ./../partials/header
+block main
+  .background-shape.buble-start-animation-class
+  form.all-content-login-wrapper
+    span.all-content-header Start to Chat
+    .form-line
+      i.fas.fa-envelope
+      input.form-input#email-input(type="email" autocomplete="off" autofocus placeholder="Email")
+    .form-line
+      i.fas.fa-key
+      input.form-input#password-input(type="password" autocomplete="off" placeholder="Password")
+    span.form-error
+    button.form-send-button Login
+    span.change-page-wrapper
+      span Don't you have an account?
+      a(href="/auth/register") Register Now

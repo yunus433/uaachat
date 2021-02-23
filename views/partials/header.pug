@@ -1,0 +1,43 @@
+extends ./head
+block content
+  .background-image-wrapper
+    if backgroundImage && backgroundImage == 1
+      image.background-image(src="/res/images/landing_page_image_1.jpg")
+    else if backgroundImage && backgroundImage == 2
+      image.background-image(src="/res/images/landing_page_image_2.jpg")
+    else if backgroundImage && backgroundImage == 3
+      image.background-image(src="/res/images/landing_page_image_3.jpg")
+    else if backgroundImage && backgroundImage == 4
+      image.background-image(src="/res/images/landing_page_image_4.jpg")
+    else
+      image.background-image(src="/res/images/landing_page_image_1.jpg")
+  .all-wrapper
+    .all-header
+      a.header-logo-wrapper(href="/")
+        span UAA
+        span.header-logo-wrapper-chat chat
+      //- .header-bar-wrapper
+        a.header-bar-each(href="/aboutus")
+          span Hakkımızda
+        a.header-bar-each(href="/contact")
+          span İletişim
+        a.header-bar-each(href="/auth/school/register")
+          span Başvur
+        a.header-bar-each(href="/auth/school/login")
+          span Yönetici Girişi
+      .header-login-wrapper
+        a.header-login-button(href="/auth/login")
+          span Login
+        a.header-register-button(href="/auth/register")
+          span Register
+    //- .all-header-responsive
+      a.header-bar-each(href="/aboutus")
+        span Hakkımızda
+      a.header-bar-each(href="/contact")
+        span İletişim
+      a.header-bar-each(href="/auth/school/register")
+        span Başvur
+      a.header-bar-each(href="/auth/school/login")
+        span Yönetici Girişi
+    .all-content
+      block main

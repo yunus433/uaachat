@@ -1,0 +1,22 @@
+extends ./../partials/header
+block main
+  .background-shape.buble-start-animation-class
+  form.all-content-register-wrapper
+    span.all-content-header Register
+    .form-line
+      i.fas.fa-envelope
+      input.form-input#email-input(type="email" autocomplete="off" autofocus placeholder="Email")
+    .form-line
+      i.fas.fa-user
+      input.form-input#name-input(type="text" autocomplete="off" placeholder="Full Name")
+    .form-line
+      i.fas.fa-key
+      input.form-input#password-input(type="password" autocomplete="off" placeholder="Password")
+    .form-line
+      i.fas.fa-key
+      input.form-input#confirm-password-input(type="password" autocomplete="off" placeholder="Confirm Password")
+    span.form-error
+    button.form-send-button Start
+    span.change-page-wrapper
+      span Already registered?
+      a(href="/auth/login") Login

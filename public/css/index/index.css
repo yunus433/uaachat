@@ -1,0 +1,98 @@
+.all-content {
+  padding: 0px 40px;
+  display: flex;
+  flex-direction: column;
+  z-index: 2;
+}
+
+.background-shape {
+  background-color: rgba(87, 77, 101, 0.6);
+  width: 125vw;
+  height: 125vw;
+  transform: translate(-50%, -50%);
+  border-radius: 100%;
+  z-index: -1;
+  position: absolute;
+}
+
+.buble-start-animation-class {
+  animation: bubleStartAnimation 1s ease-in-out 0s 1 forwards;
+  -webkit-animation: bubleStartAnimation 1s ease-in-out 0s 1 forwards;
+}
+
+.main-header {
+  font-size: 35px;
+  color: rgb(241, 242, 238);
+  width: 45vw;
+  font-weight: 600;
+  margin-top: 40px;
+}
+.main-content {
+  font-size: 20px;
+  color: rgb(241, 242, 238);
+  width: 40vw;
+  font-weight: 400;
+  margin-top: 15px;
+}
+
+.register-button {
+  margin-top: 100px;
+  align-self: center;
+  background-color: rgb(87, 77, 101);
+  color: rgb(241, 242, 238);
+  padding: 15px 20px;
+  font-size: 24px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 3px 3px rgba(87, 77, 101, 0.6);
+  border-radius: 5px;
+}
+.register-button:hover{
+  box-shadow: 0 4px 4px rgba(87, 77, 101, 0.6);
+}
+
+@media only screen and (orientation: portrait){
+  .main-header {
+    width: 90%;
+  }
+  .main-content {
+    width: 90%;
+  }
+  .all-content {
+    padding: 0px 20px;
+  }
+  .background-shape {
+    width: 150vh;
+    height: 150vh;
+  }
+}
+
+@media only screen and (max-width: 500px) and (min-width: 300px) {
+  .main-header {
+    font-size: 150%;
+  }
+  .main-content {
+    font-size: 115%;
+  }
+  .register-button {
+    font-size: 125%;
+  }
+}
+
+@keyframes bubleStartAnimation {
+  from {
+    transform: translate(-100%, -100%);
+  }
+  to {
+    transform: translate(-50%, -50%);
+  }
+}
+@-webkit-keyframes bubleStartAnimation {
+  from {
+    transform: translate(-100%, -100%);
+  }
+  to {
+    transform: translate(-50%, -50%);
+  }
+}

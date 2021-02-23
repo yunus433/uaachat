@@ -1,0 +1,72 @@
+extends ../partials/head
+block content
+  input.display-none#user-object(type="text" value=JSON.stringify(user))
+  .all-wrapper
+    .menu-wrapper
+      .profile-wrapper
+        .user-profile-photo
+          img(src=user.profile_photo alt="uaachat " + user.name)
+        .user-info-wrapper
+          span.user-name= user.name
+          span.user-email= user.email.split('@')[0]
+      .search-wrapper
+        label.search-inner-wrapper
+          i.fas.fa-search
+          input.search-chat-input(type="text" placeholder="Search or start a chat")
+      .change-chat-wrapper
+        .change-chat-header
+          span.change-chat-title Recent
+        .change-chat-inner-wrapper#recent-chats-wrapper
+          i.uploading-icon.fas.fa-spinner
+          //- each chat in latest_chats
+            .each-change-chat-wrapper(id=chat._id)
+              .each-change-chat-profile-photo
+                img(src=chat.profile_photo alt="uaachat " + chat.name)
+              .each-change-chat-info-wrapper
+                .each-chat-info-title-wrapper
+                  span.each-chat-name= chat.name
+                  span.each-chat-last-message-time= chat.last_message.created_at
+                span.each-chat-last-message
+                  if chat.last_message.sender_id == user._id
+                    .message-read-info(class=(chat.last_message.read_by.includes(chat._id)) ? "message-read-info-selected" : "") 
+                      i.fas.fa-check
+                      i.fas.fa-check
+                  span= chat.last_message.content
+                  if chat.not_read_message_number
+                    span.chat-not-read-message= chat.not_read_message_number
+        .change-chat-header
+          span.change-chat-title Contacts
+          span.change-chat-subtitle Start a new chat
+        .change-chat-inner-wrapper#contacts-wrapper
+          i.uploading-icon.fas.fa-spinner
+          //- each chat in new_chats
+            .each-change-chat-wrapper(id=chat._id)
+              .each-change-chat-profile-photo
+                img(src=chat.profile_photo alt="uaachat " + chat.name)
+              .each-change-chat-info-wrapper
+                  .each-chat-info-title-wrapper
+                    span.each-chat-name= chat.name
+                  span.each-chat-last-message
+                    span= chat.email
+    .chat-wrapper
+      span.choose-chat-text Please choose a chat to see your messages
+      //- .chat-profile-wrapper
+        .chat-profile-photo
+          img(src=chat.profile_photo alt="uaachat")
+        .chat-info-wrapper
+          span.chat-name= chat.name
+          span.chat-email= chat.email
+      //- .chat-messages-wrapper
+        //- each message, i in chat.messages
+          if i == 0 || chat.messages[i-1].day != message.day
+            span.message-day= message.day
+          if message.sender_id == user._id
+            span.each-user-message(class=(i == 0 || chat.messages[i-1].sender_id != message.sender_id ? "each-new-user-message" : ""))
+              span.each-user-message-content= message.content
+              span.each-user-message-time= message.time
+          else
+            span.each-message(class=(i == 0 || chat.messages[i-1].sender_id != message.sender_id ? "each-new-message" : ""))
+              span.each-message-content= message.content
+              span.each-message-time= message.time
+      //- .chat-input-wrapper
+        input.chat-input(type="text" placeholder="Write your message")

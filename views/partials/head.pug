@@ -1,0 +1,30 @@
+doctype html
+html(lang='tr')
+  head
+    meta(name='viewport', content='width=device-width, initial-scale=1.0, shrink-to-fit=no, maximum-scale=1.0, user-scalable=0')
+    meta(name='description' content='UAAChat: The private chat of UAA. Talk with you teachers easily, ask them you questions or just have a nice time with your friends. It\'s all secure and private, just for UAA.')
+    title UAAChat | #{title}
+    link(href='https://fonts.googleapis.com/css?family=Helvetica:100,200,300,400,500,600,700,800,900' rel='stylesheet')
+    if includes && includes.external
+      if includes.external.css
+        if includes.external.css.includes('page')
+          link(rel='stylesheet' href=`/css/${page}.css`)
+        if includes.external.css.includes('admin')
+          link(rel='stylesheet' href='/css/general/admin.css')
+        if includes.external.css.includes('general')
+          link(rel='stylesheet' href='/css/general/general.css')
+        if includes.external.css.includes('app')
+          link(rel='stylesheet' href='/css/general/app.css')
+        if includes.external.css.includes('header')
+          link(rel='stylesheet' href='/css/general/header.css')
+        if includes.external.css.includes('fontawesome')
+          link(rel='stylesheet' href='https://use.fontawesome.com/releases/v5.2.0/css/all.css', integrity='sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ', crossorigin='anonymous')
+      if includes.external.js
+        if includes.external.js.includes('page')
+          script(src=`/js/${page}.js`)
+        if includes.external.js.includes('serverRequest')
+          script(src=`/js/functions/serverRequest.js`)
+        if includes.external.js.indexOf('socket.io') > -1 
+          script(src=`/socket.io/socket.io.js`)
+  body
+    block content
