@@ -112,7 +112,7 @@ function createMessage (message) {
   if (message.sender_id == user._id) {
     const eachUserMessage = document.createElement('span');
     eachUserMessage.classList.add('each-user-message');
-    if (!last_message || last_message.sender_id != message.sender_id)
+    if (!last_message || last_message.sender_id != message.sender_id || last_message.day != message.day)
       eachUserMessage.classList.add('each-new-user-message');
     
     const eachUserMessageContent = document.createElement('span');
@@ -132,7 +132,7 @@ function createMessage (message) {
   } else {
     const eachMessage = document.createElement('span');
     eachMessage.classList.add('each-message');
-    if (!last_message || last_message.sender_id != message.sender_id)
+    if (!last_message || last_message.sender_id != message.sender_id || last_message.day != message.day)
       eachMessage.classList.add('each-new-message');
     
     const eachMessageContent = document.createElement('span');
@@ -287,6 +287,7 @@ window.onload = () => {
   document.addEventListener('keydown', event => {
     if (socket && event.key == 'Enter' && event.target.classList.contains('chat-input') && event.target.value.trim().length) {
       if (is_first_chat) {
+        is_first_chat = false;
         serverRequest(`/app/send_message`, 'POST', {
           type: 'text',
           content: event.target.value.trim(),
