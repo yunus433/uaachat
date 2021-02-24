@@ -98,7 +98,8 @@ MessageSchema.statics.createMessage = function (data, callback) {
       content: data.content.trim(),
       chat_id: mongoose.Types.ObjectId(data.chat_id.toString()),
       sender_id: mongoose.Types.ObjectId(data.sender_id.toString()),
-      read_by: (data.read_by && Array.isArray(data.read_by) && !data.read_by.filter(id => !validator.isMongoId(id.toString()).length) ? data.read_by : [])
+      read_by: (data.read_by && Array.isArray(data.read_by) && !data.read_by.filter(id => !validator.isMongoId(id.toString()).length) ? data.read_by : []),
+      created_at: Date.now()
     };
   
     const newMessage = new Message(newMessageData);
