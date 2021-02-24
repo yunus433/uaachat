@@ -121,7 +121,7 @@
   z-index: 2;
 }
 
-@media only screen and (orientation: portrait) {
+@media only screen and (max-width: 600px) and (min-width: 300px) {
   .background-image {
     height: 100vh;
     width: auto;

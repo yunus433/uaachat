@@ -114,7 +114,7 @@
   text-decoration: underline;
 }
 
-@media only screen and (orientation: portrait) {
+@media only screen and (max-width: 600px) and (min-width: 300px) {
   .all-content-register-wrapper {
     width: 100%;
   }
