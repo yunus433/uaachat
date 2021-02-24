@@ -37,7 +37,8 @@ const MessageSchema = new Schema({
   created_at: {
     // The milliseconds time the message is created, in UNIX time
     type: Number,
-    default: moment().tz('Etc/GMT0').valueOf()
+    // default: moment().tz('Etc/GMT0').valueOf() 
+    default: Date.now()
   },
   replied_message: {
     // An object reflecting the message the message was a reply to. Fields: {_id, type, content, sender_id}
