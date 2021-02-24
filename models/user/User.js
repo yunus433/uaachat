@@ -280,9 +280,10 @@ UserSchema.statics.getContacts = function (id, options_data, filters_data, callb
   };
 
   if (filters_data.name && typeof filters_data.name == 'string')
-    filters.name = { $text: {
-      $search: filters_data.name
-    } };
+    filters.name = {
+      $regex: filters_data.name,
+      $options: 'is'
+    };
 
   const User = this;
 
@@ -326,9 +327,10 @@ UserSchema.statics.getChats = function (id, options_data, filters_data, callback
   };
 
   if (filters_data.name && typeof filters_data.name == 'string')
-    filters.name = { $text: {
-      $search: filters_data.name
-    } };
+    filters.name = {
+      $regex: filters_data.name,
+      $options: 'is'
+    };
 
   const User = this;
 

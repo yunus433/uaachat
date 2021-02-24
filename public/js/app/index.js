@@ -43,24 +43,32 @@ function pushChatToWrapper (chat, wrapper) {
   wrapper.appendChild(eachChangeChatWrapper);
 }
 
-function reUploadContacts () {
+function reUploadContacts (chats) {
   // Recreate the content of the contacts-wrapper
 
   document.getElementById('contacts-wrapper').innerHTML = '';
 
-  serverRequest(`/app/contacts?limit=${limit}&skip=0`, 'GET', {}, response => {
-    if (!response.success)
-      return alert(`An error occured, please try again later. Error Message: ${response.error}`);
-
-    response.contacts.forEach(contact => {
-      pushChatToWrapper(contact, document.getElementById('contacts-wrapper'));
+  if (!chats) {
+    serverRequest(`/app/contacts?limit=${limit}&skip=0`, 'GET', {}, response => {
+      if (!response.success)
+        return alert(`An error occured, please try again later. Error Message: ${response.error}`);
+  
+      response.contacts.forEach(contact => {
+        pushChatToWrapper(contact, document.getElementById('contacts-wrapper'));
+      });
+  
+      skip += response.contacts.length;
+  
+      if (!response.contacts.length)
+        is_finished = true;
+    });
+  } else {
+    chats.forEach(chat => {
+      pushChatToWrapper(chat, document.getElementById('contacts-wrapper'));
     });
 
-    skip += response.contacts.length;
-
-    if (!response.contacts.length)
-      is_finished = true;
-  });
+    skip += chats.length;
+  }
 }
 
 function reUploadChats (chats) {
@@ -238,7 +246,7 @@ function searchContacts (name, callback) {
     if (!res.success)
       return callback(res.error);
       
-    return callback(null, res.chats);
+    return callback(null, res.contacts);
   });
 };
 
@@ -332,18 +340,23 @@ window.onload = () => {
         });
       }
     }
-  });
 
-  const searchInput = document.querySelector('.search-chat-input');
+    if (event.key == 'Enter' && event.target.classList.contains('search-chat-input')) {
+      searchChats(event.target.value, (err, chats) => {
+        if (err)
+          return alert(`An error occured, please try again later. Error Message: ` + err);
   
-  searchInput.oninput = event => {
-    searchChats(event.target.value, (err, chats) => {
-      if (err)
-        return alert(`An error occured, please try again later. Error Message: ` + err);
-
-      return reUploadChats(chats);
-    });
-  }
+        reUploadChats(chats);
+  
+        searchContacts(event.target.value, (err, contacts) => {
+          if (err)
+            return alert(`An error occured, please try again later. Error Message: ` + err);
+  
+          return reUploadContacts(contacts);
+        });
+      });
+    }
+  });
 }
 
 window.onbeforeunload = () => {
