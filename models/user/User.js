@@ -273,7 +273,9 @@ UserSchema.statics.getContacts = function (id, options_data, filters_data, callb
   if (!id || !validator.isMongoId(id.toString()) || !options_data || typeof options_data != 'object' || !filters_data || typeof filters_data != 'object')
     return callback('bad_request');
 
-  const filters = {};
+  const filters = {
+    is_confirmed: true
+  };
   const options = {
     limit: ((!options_data.limit || isNaN(parseInt(options_data.limit))) ? 100 : parseInt(options_data.limit)),
     skip: (!options_data.skip || isNaN(parseInt(options_data.skip)) ? 0 : parseInt(options_data.skip))
