@@ -16,6 +16,7 @@
 .all-content {
   display: flex;
   align-items: center;
+  overflow-y: scroll;
 }
 
 .all-content-confirm-wrapper {
@@ -119,7 +120,7 @@
 }
 
 @media only screen and (orientation: portrait) {
-  .all-content-register-wrapper {
+  .all-content-confim-wrapper {
     width: 100%;
   }
   .background-shape {

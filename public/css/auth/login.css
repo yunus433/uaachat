@@ -16,6 +16,7 @@
 .all-content {
   display: flex;
   align-items: center;
+  overflow-y: scroll;
 }
 
 .all-content-login-wrapper {
@@ -119,12 +120,6 @@
   .background-shape {
     width: 150vh;
     height: 150vh;
-  }
-}
-
-@media only screen and (max-width: 1100px) and (orientation: landscape) {
-  .all-content-register-wrapper {
-    width: 60%;
   }
 }
 
