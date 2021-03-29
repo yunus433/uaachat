@@ -314,53 +314,6 @@ UserSchema.statics.getContacts = function (id, options_data, filters_data, callb
   });
 };
 
-UserSchema.statics.getChats = function (id, options_data, filters_data, callback) {
-  // Finds all user documents that are on the chats field of the user with the given id and returns them if they are matching filter, sorted by name
-  // Spesify name (string that the name of users should match) in filters, optional
-  // Spesify limit and skip on options, they are default to 100 and 0, respectively
-
-  if (!id || !validator.isMongoId(id.toString()) || !options_data || typeof options_data != 'object' || !filters_data || typeof filters_data != 'object')
-    return callback('bad_request');
-
-  const filters = {};
-  const options = {
-    limit: ((!options_data.limit || !Number.isInteger(options_data.limit)) ? 100 : options_data.limit),
-    skip: (!options_data.skip || !Number.isInteger(options_data.skip) ? 0 : options_data.skip)
-  };
-
-  if (filters_data.name && typeof filters_data.name == 'string')
-    filters.name = {
-      $regex: filters_data.name,
-      $options: 'is'
-    };
-
-  const User = this;
-
-  User.findById(mongoose.Types.ObjectId(id.toString()), (err, user) => {
-    if (err || !user) return callback('document_not_found');
-
-    filters._id = { $in: user.chats };
-
-    User
-      .find(filters)
-      .sort({ name: -1 })
-      .skip( options.skip * options.limit )
-      .limit( options.limit )
-      .then(users => {
-        async.times(
-          users.length,
-          (time, next) => getUser(users[time], (err, user) => next(err, user)),
-          (err, users) => {
-            if (err) return callback(err);
-
-            return callback(null, users);
-          }
-        );
-      })
-      .catch(err => callback(err));
-  });
-};
-
 UserSchema.statics.pushUserToChats = function (id, user_id, callback) {
   // Find the user with the given id and push the user_id to its chats array
   // Return an error if it exists

@@ -133,19 +133,14 @@ ChatSchema.statics.updateLastMessageTime = function (id, callback) {
   });
 };
 
-ChatSchema.statics.getChats = function (id, options_data, filters_data, callback) {
+ChatSchema.statics.getChats = function (id, filters_data, callback) {
   // Finds all user documents that are on the chats field of the user with the given id and returns them if they are matching filter, sorted by name
   // Spesify name (string that the name of users should match) in filters, optional
-  // Spesify limit and skip on options, they are default to 100 and 0, respectively
 
-  if (!id || !validator.isMongoId(id.toString()) || !options_data || typeof options_data != 'object' || !filters_data || typeof filters_data != 'object')
+  if (!id || !validator.isMongoId(id.toString()) || !filters_data || typeof filters_data != 'object')
     return callback('bad_request');
 
   const filters = {};
-  const options = {
-    limit: ((!options_data.limit || !Number.isInteger(options_data.limit)) ? 100 : options_data.limit),
-    skip: (!options_data.skip || !Number.isInteger(options_data.skip) ? 0 : options_data.skip)
-  };
 
   const Chat = this;
 
@@ -160,8 +155,6 @@ ChatSchema.statics.getChats = function (id, options_data, filters_data, callback
     Chat
       .find(filters)
       .sort({ last_message_time: -1 })
-      .skip( options.skip * options.limit )
-      .limit( options.limit )
       .then(chats => { // Find recent chats in user chats array
         const user_filters = {};
 
@@ -174,6 +167,8 @@ ChatSchema.statics.getChats = function (id, options_data, filters_data, callback
         async.times(
           chats.length,
           (time, next) => {
+            const chat_id = chats[time]._id.toString();
+
             user_filters.$and = [
               {_id: {$in: chats[time].users_list}},
               {_id: {$ne: mongoose.Types.ObjectId(id.toString())}}
@@ -183,15 +178,26 @@ ChatSchema.statics.getChats = function (id, options_data, filters_data, callback
               if (err) return next('database_error');
               if (!user) return next(null, null);
 
-              User.getUserById(
-                user._id,
-                (err, user) => next(err, {
-                  _id: chats[time]._id.toString(),
-                  profile_photo: user.profile_photo,
-                  name: user.name,
-                  email: user.email
-                })
-              );
+              Message.getLatestMessage(chat_id, (err, message) => {
+                if (err) return next(err);
+
+                Message.getNotReadMessageNumberOfChat(chat_id, id, (err, number) => {
+                  if (err) return next(err);
+
+                  User.getUserById(
+                    user._id,
+                    (err, user) => next(err, {
+                      _id: chat_id,
+                      user_id: user._id,
+                      profile_photo: user.profile_photo,
+                      name: user.name,
+                      email: user.email,
+                      last_message: message,
+                      not_read_message_number: number
+                    })
+                  );
+                });
+              });
             });
           },
           (err, chats) => {
@@ -199,7 +205,7 @@ ChatSchema.statics.getChats = function (id, options_data, filters_data, callback
 
             return callback(null, chats.filter(chat => chat && chat._id))
           }
-        )
+        );
       })
       .catch(err => callback('database_error'));
   });
@@ -238,7 +244,7 @@ ChatSchema.statics.getChatMessages = function (user_id, data, callback) {
     if (!chat)
       return callback(null, []);
 
-    Message.getMessagesOfChat(data, (err, messages) => callback(err, messages));
+    Message.getMessagesOfChat(data, user_id, (err, messages) => callback(err, messages));
   });
 };
 

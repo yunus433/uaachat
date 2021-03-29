@@ -1,100 +1,13 @@
-let limit = 100, skip = 0, is_finished = false;
-let message_limit = 100, message_skip = 0, message_is_finished = false;
-let socket = null, user, chat_id, is_first_chat;
+let limit = 100, skip = 0; // Limit and skip for contacts
+let user = null, chat_id = null, is_first_chat;
 let last_message = null;
 
-function pushChatToWrapper (chat, wrapper) {
-  // Push a new DOM document to the wrapper
-
-  const eachChangeChatWrapper = document.createElement('div');
-  eachChangeChatWrapper.classList.add('each-change-chat-wrapper');
-  eachChangeChatWrapper.id = chat._id;
-  if (chat._id == chat_id)
-    eachChangeChatWrapper.classList.add('selected-chat');
-
-  const eachChangeChatProfilePhoto = document.createElement('div');
-  eachChangeChatProfilePhoto.classList.add('each-change-chat-profile-photo');
-  const img = document.createElement('img');
-  img.src = chat.profile_photo;
-  img.alt = `uaachat ${chat.name}`;
-  eachChangeChatProfilePhoto.appendChild(img);
-  eachChangeChatWrapper.appendChild(eachChangeChatProfilePhoto);
-
-  const chatInfoWrapper = document.createElement('div');
-  chatInfoWrapper.classList.add('chat-info-wrapper');
-
-  const eachChatInfoTitleWrapper = document.createElement('div');
-  eachChatInfoTitleWrapper.classList.add('each-chat-info-title-wrapper');
-  const eachChatName = document.createElement('span');
-  eachChatName.classList.add('each-chat-name');
-  eachChatName.innerHTML = chat.name;
-  eachChatInfoTitleWrapper.appendChild(eachChatName);
-  chatInfoWrapper.appendChild(eachChatInfoTitleWrapper);
-
-  const eachChatLastMessage = document.createElement('span');
-  eachChatLastMessage.classList.add('each-chat-last-message');
-  const span = document.createElement('span');
-  span.innerHTML = chat.email.split('@')[0];
-  eachChatLastMessage.appendChild(span);
-  chatInfoWrapper.appendChild(eachChatLastMessage);
-
-  eachChangeChatWrapper.appendChild(chatInfoWrapper);
-
-  wrapper.appendChild(eachChangeChatWrapper);
-}
-
-function reUploadContacts (chats) {
-  // Recreate the content of the contacts-wrapper
-
-  document.getElementById('contacts-wrapper').innerHTML = '';
-
-  if (!chats) {
-    serverRequest(`/app/contacts?limit=${limit}&skip=0`, 'GET', {}, response => {
-      if (!response.success)
-        return alert(`An error occured, please try again later. Error Message: ${response.error}`);
-  
-      response.contacts.forEach(contact => {
-        pushChatToWrapper(contact, document.getElementById('contacts-wrapper'));
-      });
-  
-      skip += response.contacts.length;
-  
-      if (!response.contacts.length)
-        is_finished = true;
-    });
-  } else {
-    chats.forEach(chat => {
-      pushChatToWrapper(chat, document.getElementById('contacts-wrapper'));
-    });
-
-    skip += chats.length;
-  }
-}
-
-function reUploadChats (chats) {
-  // Recreate the content of the recent-chats-wrapper
-
-  document.getElementById('recent-chats-wrapper').innerHTML = '';
-
-  if (!chats) {
-    serverRequest(`/app/chats?limit=${limit}&skip=0`, 'GET', {}, response => {
-      if (!response.success)
-        return alert(`An error occured, please try again later. Error Message: ${response.error}`);
-  
-      response.chats.forEach(chat => {
-        pushChatToWrapper(chat, document.getElementById('recent-chats-wrapper'));
-      });
-  
-      skip += response.chats.length;
-    });
-  } else {
-    chats.forEach(chat => {
-      pushChatToWrapper(chat, document.getElementById('recent-chats-wrapper'));
-    });
-
-    skip += chats.length;
-  }
-}
+function giveError (error) {
+  if (error && typeof error == 'string')
+    alert("An error occured. Error Message: " + error);
+  else
+    alert("An unknown error occured :(");
+};
 
 function createMessage (message) {
   // Create and push a new message to the chat-messages-wrapper
@@ -155,26 +68,268 @@ function createMessage (message) {
   setTimeout(() => {
     wrapper.scrollTop = wrapper.scrollHeight;
   }, 15);
+};
+
+function uploadLatestMessages (callback) {
+  serverRequest(`/app/messages?chat_id=${chat_id}&timezone=${(new Date()).getTimezoneOffset()}&earliest_id=${last_message._id.toString()}`, 'GET', {}, response => {
+    if (!response.success)
+      callback(response.error);
+
+    for (let i = 0; i < response.messages.length; i++)
+      createMessage(response.messages[i]);
+
+    callback(null)
+  });
+};
+
+function getChats (callback) {
+  // Upload all chats, without any filter or option
+
+  serverRequest(`/app/chats`, 'GET', {}, response => {
+    if (!response.success)
+      return callback(response.error || true);
+
+    callback(null, response.chats);
+  });
+};
+
+function getContacts (callback) {
+  // Upload recent contacts using global limit and skip options
+
+  serverRequest(`/app/contacts?limit=${limit}&skip=${skip}`, 'GET', {}, response => {
+    if (!response.success)
+      return callback(response.error || true);
+
+    skip++;
+
+    callback(null, response.contacts);
+  });
+};
+
+function listenForTheChatMessages () {
+  if (chat_id && last_message)
+    uploadLatestMessages(err => {
+      if (err) return giveError(err);
+
+      setTimeout(() => {
+        listenForTheChatMessages()
+      }, 10);
+    });
+  else
+    setTimeout(() => {
+      listenForTheChatMessages()
+    }, 10);
+};
+
+function listenForChats () {
+  getChats((err, chats) => {
+    if (err) return console.log(err);
+
+    for (let i = 0; i < chats.length; i++) {
+      const chat = chats[i];
+
+      let eachChangeChatWrapper = document.getElementById(chat._id.toString());
+      if (eachChangeChatWrapper && chat._id.toString() == chat_id)
+        eachChangeChatWrapper.classList.add('selected-chat');
+
+      if (eachChangeChatWrapper) {  
+        const eachChangeChatProfilePhoto = eachChangeChatWrapper.childNodes[0];
+        eachChangeChatProfilePhoto.childNodes[0].src = chat.profile_photo;
+        eachChangeChatProfilePhoto.childNodes[0].alt = `uaachat ${chat.name}`;
+  
+        const chatInfoWrapper = eachChangeChatWrapper.childNodes[1];
+  
+        const eachChatInfoTitleWrapper = chatInfoWrapper.childNodes[0];
+        eachChatInfoTitleWrapper.childNodes[0].innerHTML = chat.name;
+  
+        const eachChatLastMessage = chatInfoWrapper.childNodes[1];
+        eachChatLastMessage.childNodes[0].innerHTML = chat.last_message.content;
+        if (chat.not_read_message_number) {
+          if (eachChatLastMessage.childNodes[1]) {
+            eachChatLastMessage.childNodes[1].innerHTML = chat.not_read_message_number;
+          } else {
+            const notRead = document.createElement('span');
+            notRead.classList.add('chat-not-read-message');
+            notRead.innerHTML = chat.not_read_message_number;
+            eachChatLastMessage.appendChild(notRead);
+          }
+        }
+  
+        let previousElement = eachChangeChatWrapper, previousElementCount = 0;
+        while (previousElement.previousElementSibling) {
+          previousElement = previousElement.previousElementSibling;
+          previousElementCount++;
+        }
+        if (previousElementCount > i)
+          while (previousElementCount > i) {
+            eachChangeChatWrapper.parentNode.insertBefore(eachChangeChatWrapper, eachChangeChatWrapper.previousElementSibling);
+            previousElementCount--;
+          };
+      } else {
+        eachChangeChatWrapper = document.createElement('div');
+
+        if (document.getElementById(chat.user_id.toString())) {// If it's a contact
+          document.getElementById(chat.user_id.toString()).remove();
+          if (document.querySelector('.selected-chat'))
+            document.querySelector('.selected-chat').classList.remove('selected-chat');
+          eachChangeChatWrapper.classList.add('selected-chat');
+        }
+
+        eachChangeChatWrapper.classList.add('each-change-chat-wrapper');
+        eachChangeChatWrapper.id = chat._id;
+  
+        const eachChangeChatProfilePhoto = document.createElement('div');
+        eachChangeChatProfilePhoto.classList.add('each-change-chat-profile-photo');
+        const img = document.createElement('img');
+        img.src = chat.profile_photo;
+        img.alt = `uaachat ${chat.name}`;
+        eachChangeChatProfilePhoto.appendChild(img);
+        eachChangeChatWrapper.appendChild(eachChangeChatProfilePhoto);
+  
+        const chatInfoWrapper = document.createElement('div');
+        chatInfoWrapper.classList.add('chat-info-wrapper');
+  
+        const eachChatInfoTitleWrapper = document.createElement('div');
+        eachChatInfoTitleWrapper.classList.add('each-chat-info-title-wrapper');
+        const eachChatName = document.createElement('span');
+        eachChatName.classList.add('each-chat-name');
+        eachChatName.innerHTML = chat.name;
+        eachChatInfoTitleWrapper.appendChild(eachChatName);
+        chatInfoWrapper.appendChild(eachChatInfoTitleWrapper);
+  
+        const eachChatLastMessage = document.createElement('span');
+        eachChatLastMessage.classList.add('each-chat-last-message');
+        const span = document.createElement('span');
+        span.innerHTML = chat.last_message.content;
+        eachChatLastMessage.appendChild(span);
+        if (chat.not_read_message_number) {
+          const notRead = document.createElement('span');
+          notRead.classList.add('chat-not-read-message');
+          notRead.innerHTML = chat.not_read_message_number;
+          eachChatLastMessage.appendChild(notRead);
+        }
+        chatInfoWrapper.appendChild(eachChatLastMessage);
+  
+        eachChangeChatWrapper.appendChild(chatInfoWrapper);
+  
+        document.getElementById('recent-chats-wrapper').appendChild(eachChangeChatWrapper);
+        while (eachChangeChatWrapper.previousElementSibling)
+          document.getElementById('recent-chats-wrapper').insertBefore(eachChangeChatWrapper, eachChangeChatWrapper.previousElementSibling);
+      }
+    }
+
+    setTimeout(() => {
+      listenForChats();
+    }, 10);
+  });
 }
+
+function uploadChatsAndContacts (callback) {
+  getChats((err, chats) => {
+    if (err) return callback(err);
+
+    getContacts((err, contacts) => {
+      if (err) return callback(err);
+
+      // Push a new DOM document to the wrapper
+
+      chats.forEach(chat => {
+        const eachChangeChatWrapper = document.createElement('div');
+        eachChangeChatWrapper.classList.add('each-change-chat-wrapper');
+        eachChangeChatWrapper.id = chat._id;
+  
+        const eachChangeChatProfilePhoto = document.createElement('div');
+        eachChangeChatProfilePhoto.classList.add('each-change-chat-profile-photo');
+        const img = document.createElement('img');
+        img.src = chat.profile_photo;
+        img.alt = `uaachat ${chat.name}`;
+        eachChangeChatProfilePhoto.appendChild(img);
+        eachChangeChatWrapper.appendChild(eachChangeChatProfilePhoto);
+  
+        const chatInfoWrapper = document.createElement('div');
+        chatInfoWrapper.classList.add('chat-info-wrapper');
+  
+        const eachChatInfoTitleWrapper = document.createElement('div');
+        eachChatInfoTitleWrapper.classList.add('each-chat-info-title-wrapper');
+        const eachChatName = document.createElement('span');
+        eachChatName.classList.add('each-chat-name');
+        eachChatName.innerHTML = chat.name;
+        eachChatInfoTitleWrapper.appendChild(eachChatName);
+        chatInfoWrapper.appendChild(eachChatInfoTitleWrapper);
+  
+        const eachChatLastMessage = document.createElement('span');
+        eachChatLastMessage.classList.add('each-chat-last-message');
+        const span = document.createElement('span');
+        span.innerHTML = chat.last_message.content;
+        eachChatLastMessage.appendChild(span);
+        if (chat.not_read_message_number) {
+          const notRead = document.createElement('span');
+          notRead.classList.add('chat-not-read-message');
+          notRead.innerHTML = chat.not_read_message_number;
+          eachChatLastMessage.appendChild(notRead);
+        }
+        chatInfoWrapper.appendChild(eachChatLastMessage);
+  
+        eachChangeChatWrapper.appendChild(chatInfoWrapper);
+  
+        document.getElementById('recent-chats-wrapper').appendChild(eachChangeChatWrapper);
+      });
+      contacts.forEach(contact => {
+        const eachChangeChatWrapper = document.createElement('div');
+        eachChangeChatWrapper.classList.add('each-change-chat-wrapper');
+        eachChangeChatWrapper.id = contact._id;
+  
+        const eachChangeChatProfilePhoto = document.createElement('div');
+        eachChangeChatProfilePhoto.classList.add('each-change-chat-profile-photo');
+        const img = document.createElement('img');
+        img.src = contact.profile_photo;
+        img.alt = `uaachat ${contact.name}`;
+        eachChangeChatProfilePhoto.appendChild(img);
+        eachChangeChatWrapper.appendChild(eachChangeChatProfilePhoto);
+  
+        const chatInfoWrapper = document.createElement('div');
+        chatInfoWrapper.classList.add('chat-info-wrapper');
+  
+        const eachChatInfoTitleWrapper = document.createElement('div');
+        eachChatInfoTitleWrapper.classList.add('each-chat-info-title-wrapper');
+        const eachChatName = document.createElement('span');
+        eachChatName.classList.add('each-chat-name');
+        eachChatName.innerHTML = contact.name;
+        eachChatInfoTitleWrapper.appendChild(eachChatName);
+        chatInfoWrapper.appendChild(eachChatInfoTitleWrapper);
+  
+        const eachChatLastMessage = document.createElement('span');
+        eachChatLastMessage.classList.add('each-chat-last-message');
+        const span = document.createElement('span');
+        span.innerHTML = contact.email.split('@')[0];
+        eachChatLastMessage.appendChild(span);
+        chatInfoWrapper.appendChild(eachChatLastMessage);
+  
+        eachChangeChatWrapper.appendChild(chatInfoWrapper);
+  
+        document.getElementById('contacts-wrapper').appendChild(eachChangeChatWrapper);
+      });
+
+      return callback(null);
+    });
+  });
+};
 
 function createChatWrapperContent () {
   // Creates the content of the chat wrapper using chat_id
-  
+
+  last_message = null;
   const chatWrapper = document.querySelector('.chat-wrapper');
   chatWrapper.innerHTML = '';
   if (document.querySelector('.selected-chat'))
     document.querySelector('.selected-chat').classList.remove('selected-chat');
   document.getElementById(chat_id).classList.add('selected-chat');
 
-  serverRequest(`/app/messages?chat_id=${chat_id}&limit=${message_limit}&timezone=${(new Date()).getTimezoneOffset()}`, 'GET', {}, response => {
+  serverRequest(`/app/messages?chat_id=${chat_id}&timezone=${(new Date()).getTimezoneOffset()}`, 'GET', {}, response => {
     if (!response.success)
-      return alert(`An error occured, please try again later. Error Message: ${response.error}`);
+      giveError(response.error);
 
     is_first_chat = response.messages.length ? false : true;
-    message_skip += response.messages.length;
-
-    if (!response.messages.length)
-      message_is_finished = true;
 
     const chatProfileWrapper = document.createElement('div');
     chatProfileWrapper.classList.add('chat-profile-wrapper');
@@ -215,7 +370,6 @@ function createChatWrapperContent () {
 
     chatWrapper.appendChild(chatMessagesWrapper);
 
-    last_message = null;
     for (let i = 0; i < response.messages.length; i++)
       createMessage(response.messages[i]);
 
@@ -230,37 +384,31 @@ function createChatWrapperContent () {
 
     chatWrapper.appendChild(chatInputWrapper);
   });
+};
+
+function uploadFirstChatMessages () {
+  if (chat_id && is_first_chat)
+    serverRequest(`/app/messages?chat_id=${chat_id}&timezone=${(new Date()).getTimezoneOffset()}`, 'GET', {}, response => {
+      if (!response.success)
+        callback(response.error);
+  
+      for (let i = 0; i < response.messages.length; i++)
+        createMessage(response.messages[i]);
+  
+      callback(null)
+    });
 }
 
-function searchChats (name, callback) {
-  serverRequest('/app/chats' + (name && name.length ? '?name=' + name : ''), 'GET', {}, res => {
-    if (!res.success)
-      return callback(res.error);
-      
-    return callback(null, res.chats);
-  });
-};
-
-function searchContacts (name, callback) {
-  serverRequest('/app/contacts' + (name && name.length ? '?name=' + name : ''), 'GET', {}, res => {
-    if (!res.success)
-      return callback(res.error);
-      
-    return callback(null, res.contacts);
-  });
-};
-
 window.onload = () => {
-  reUploadChats();
-  reUploadContacts();
-
   user = JSON.parse(document.getElementById('user-object').value);
-  socket = io();
 
-  socket.on('connect', function () {
-    socket.emit('join', {
-      room: user._id
-    });
+  uploadChatsAndContacts(err => {
+    if (err) return giveError(err);
+
+    listenForChats(); // Listen for any change on chats
+    listenForTheChatMessages(); // Listen for any changes on the messages of the current chat
+    document.querySelector('.all-uploading-wrapper').style.display = 'none';
+    document.querySelector('.all-wrapper').style.display = 'flex';
   });
 
   document.addEventListener('click', event => {
@@ -285,7 +433,7 @@ window.onload = () => {
   });
 
   document.addEventListener('keydown', event => {
-    if (socket && event.key == 'Enter' && event.target.classList.contains('chat-input') && event.target.value.trim().length) {
+    if (event.key == 'Enter' && event.target.classList.contains('chat-input') && event.target.value.trim().length) {
       if (is_first_chat) {
         is_first_chat = false;
         serverRequest(`/app/send_message`, 'POST', {
@@ -298,22 +446,10 @@ window.onload = () => {
           ]
         }, response => {
           if (!response.success)
-            return alert("An unknown error occured. Error message: " + response.error);
+            return giveError(response.error);
 
-          serverRequest(`/app/message?_id=${response.message_id}&timezone=${(new Date).getTimezoneOffset()}`, 'GET', {}, response => {
-            if (!response.success)
-              return alert("An unknown error occured. Error message: " + response.error);
-
-            socket.emit('send_first_message', {
-              message_id: response.message_id
-            }, err => {
-              if (err) return alert(err);
-              event.target.value = '';
-              reUploadChats();
-              reUploadContacts();
-              createMessage(response.message);
-            });
-          });
+          uploadFirstChatMessages();
+          event.target.value = '';
         });
       } else {
         serverRequest(`/app/send_message`, 'POST', {
@@ -323,46 +459,27 @@ window.onload = () => {
           chat_id
         }, response => {
           if (!response.success)
-            return alert("An unknown error occured. Error message: " + response.error);
+            return giveError(response.error);
 
-          serverRequest(`/app/message?_id=${response.message_id}&timezone=${(new Date).getTimezoneOffset()}`, 'GET', {}, response => {
-            if (!response.success)
-              return alert("An unknown error occured. Error message: " + response.error);
-
-            socket.emit('send_message', {
-              message_id: response.message_id
-            }, err => {
-              if (err) return alert(err);
-              event.target.value = '';
-              reUploadChats();
-              createMessage(response.message);
-            });
-          });
+          event.target.value = '';
         });
       }
     }
 
-    if (event.key == 'Enter' && event.target.classList.contains('search-chat-input')) {
-      searchChats(event.target.value, (err, chats) => {
-        if (err)
-          return alert(`An error occured, please try again later. Error Message: ` + err);
+    // if (event.key == 'Enter' && event.target.classList.contains('search-chat-input')) {
+    //   searchChats(event.target.value, (err, chats) => {
+    //     if (err)
+    //       return alert(`An error occured, please try again later. Error Message: ` + err);
   
-        reUploadChats(chats);
+    //     reUploadChats(chats);
   
-        searchContacts(event.target.value, (err, contacts) => {
-          if (err)
-            return alert(`An error occured, please try again later. Error Message: ` + err);
+    //     searchContacts(event.target.value, (err, contacts) => {
+    //       if (err)
+    //         return alert(`An error occured, please try again later. Error Message: ` + err);
   
-          return reUploadContacts(contacts);
-        });
-      });
-    }
+    //       return reUploadContacts(contacts);
+    //     });
+    //   });
+    // }
   });
-}
-
-window.onbeforeunload = () => {
-  if (socket)
-    socket.emit('leave', {
-      room: user._id
-    });
 }

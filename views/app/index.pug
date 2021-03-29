@@ -1,6 +1,8 @@
 extends ../partials/head
 block content
   input.display-none#user-object(type="text" value=JSON.stringify(user))
+  .all-uploading-wrapper
+    i.uploading-icon.fas.fa-spinner
   .all-wrapper
     .menu-wrapper
       .profile-wrapper
@@ -17,7 +19,6 @@ block content
         .change-chat-header
           span.change-chat-title Recent
         .change-chat-inner-wrapper#recent-chats-wrapper
-          i.uploading-icon.fas.fa-spinner
           //- each chat in latest_chats
             .each-change-chat-wrapper(id=chat._id)
               .each-change-chat-profile-photo
@@ -38,7 +39,6 @@ block content
           span.change-chat-title Contacts
           span.change-chat-subtitle Start a new chat
         .change-chat-inner-wrapper#contacts-wrapper
-          i.uploading-icon.fas.fa-spinner
           //- each chat in new_chats
             .each-change-chat-wrapper(id=chat._id)
               .each-change-chat-profile-photo

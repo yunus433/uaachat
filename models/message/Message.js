@@ -119,40 +119,58 @@ MessageSchema.statics.createMessage = function (data, callback) {
   }
 };
 
-MessageSchema.statics.getMessagesOfChat = function (data, callback) {
-  // Get messages of the chat with the given id
+MessageSchema.statics.getMessagesOfChat = function (data, user_id, callback) {
+  // Get messages of the chat with the given id. Updates all messages to read true send by different users
 
-  if (!data || typeof data != 'object' || !data.chat_id || !validator.isMongoId(data.chat_id.toString()) || !checkTimezone(data.timezone))
+  if (!data || typeof data != 'object' || !data.chat_id || !validator.isMongoId(data.chat_id.toString()) || !checkTimezone(data.timezone) || !user_id || !validator.isMongoId(user_id.toString()))
     return callback('bad_request');
 
   const Message = this;
 
-  if (!data.limit || isNaN(parseInt(data.limit)) || parseInt(data.limit) > 200)
-    data.limit = 100;
-
-  if (!data.skip || isNaN(parseInt(data.skip)))
-    data.skip = 0;
-
   Message
     .find({
-      chat_id: mongoose.Types.ObjectId(data.chat_id.toString())
+      chat_id: mongoose.Types.ObjectId(data.chat_id.toString()),
+      sender_id: { $ne: mongoose.Types.ObjectId(user_id.toString()) },
+      read_by: { $ne: mongoose.Types.ObjectId(user_id.toString()) }
     })
-    .sort({ created_at: 1 })
-    .skip(parseInt(data.skip) * parseInt(data.limit))
-    .limit(parseInt(data.limit))
     .then(messages => {
       async.timesSeries(
         messages.length,
-        (time, next) => formatMessage({
-          message: messages[time],
-          timezone: parseInt(data.timezone)
-        }, (err, message) => next(err, message)),
-        (err, messages) => callback(err, messages)
+        (time, next) => {
+          Message.findByIdAndUpdate(mongoose.Types.ObjectId(messages[time]._id), {$push: {
+            read_by: mongoose.Types.ObjectId(user_id.toString())
+          }}, err => next(err))
+        },
+        err => {
+          if (err) return callback(err);
+
+          const filters = {
+            chat_id: mongoose.Types.ObjectId(data.chat_id.toString())
+          };
+
+          if (data.earliest_id && validator.isMongoId(data.earliest_id.toString()))
+            filters._id = { $gt: mongoose.Types.ObjectId(data.earliest_id.toString()) };
+
+          Message
+            .find(filters)
+            .sort({ created_at: 1 })
+            .limit(500) // Default to show last 500 messages, not before
+            .then(messages => {
+              async.timesSeries(
+                messages.length,
+                (time, next) => formatMessage({
+                  message: messages[time],
+                  timezone: parseInt(data.timezone)
+                }, (err, message) => next(err, message)),
+                (err, messages) => callback(err, messages)
+              );
+            })
+            .catch(err => {
+              console.log(err);
+              return callback('database_error');
+            });
+        }
       );
-    })
-    .catch(err => {
-      console.log(err);
-      return callback('database_error');
     });
 };
 
@@ -174,6 +192,9 @@ MessageSchema.statics.findMessageById = function (data, callback) {
     }, (err, message) => callback(err, message));
   });
 };
+
+
+
 
 MessageSchema.statics.updateReadBy = function (id, user_id, callback) {
   // Find the document with the given id and push the user to read_by array
@@ -212,6 +233,26 @@ MessageSchema.statics.getLatestMessage = function (id, callback) {
     .limit(1) // Take only the latest
     .then(messages => callback(null, messages.length ? messages[0] : null))
     .catch(() => callback('database_error'));
+};
+
+MessageSchema.statics.getNotReadMessageNumberOfChat = function (chat_id, user_id, callback) {
+  // Count and return number of documents that match the chat_id and do not have user_id in their read_by array
+  // Return the number or an error if it exists
+
+  if (!chat_id || !validator.isMongoId(chat_id.toString()) || !user_id || !validator.isMongoId(user_id.toString()))
+    return callback('bad_request');
+
+  const Message = this;
+
+  Message
+    .find({
+      chat_id: mongoose.Types.ObjectId(chat_id.toString()),
+      sender_id: { $ne: mongoose.Types.ObjectId(user_id.toString()) },
+      read_by: { $ne: mongoose.Types.ObjectId(user_id.toString()) }
+    })
+    .countDocuments()
+    .then(number => callback(null, number))
+    .catch(err => {console.log(err);callback('database_error')});
 };
 
 module.exports = mongoose.model('Message', MessageSchema);

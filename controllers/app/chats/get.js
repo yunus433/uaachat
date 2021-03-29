@@ -4,7 +4,7 @@
 const Chat = require('../../../models/chat/Chat');
 
 module.exports = (req, res) => {
-  Chat.getChats(req.session.user._id, req.query, req.query, (err, chats) => {
+  Chat.getChats(req.session.user._id, req.query, (err, chats) => {
     if (err) {
       res.write(JSON.stringify({ error: err, success: false }));
       return res.end();

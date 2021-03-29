@@ -1,5 +1,40 @@
-.all-wrapper {
+.all-uploading-wrapper {
+  width: 100vw;
+  height: 100vh;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(241, 242, 238);
+}
+
+.uploading-icon {
+  color: rgb(248, 248, 248);
+  font-size: 30px;
+  animation: spinAnimation 1.5s linear 0s infinite;
+  -webkit-animation: spinAnimation 1.5s linear 0s infinite;
+}
+
+@keyframes spinAnimation {
+  from {
+    transform: rotate(0deg)
+  }
+  to {
+    transform: rotate(360deg)
+  }
+}
+@-webkit-keyframes spinAnimation {
+  from {
+    transform: rotate(0deg)
+  }
+  to {
+    transform: rotate(360deg)
+  }
+}
+
+
+.all-wrapper {
+  display: none;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
@@ -163,7 +198,7 @@
 .each-change-chat-profile-photo img {
   width: 100%;
 }
-.each-change-chat-info-wrapper {
+.each-change-chat-info-wrapper, .chat-info-wrapper {
   width: calc(100% - 65px);
   display: flex;
   flex-direction: column;
@@ -193,6 +228,7 @@
   font-size: 12px;
 }
 .each-chat-last-message {
+  width: 100%;
   height: 20px;
   font-size: 14px;
   color: rgb(67, 80, 88);
@@ -418,32 +454,6 @@
   color: rgb(136, 136, 136);
   opacity: 1;
   font-weight: 500;
-}
-
-.uploading-icon {
-  margin: 20px 0px;
-  color: rgb(67, 80, 88);
-  font-size: 16px;
-  animation: spinAnimation 1.5s linear 0s infinite;
-  -webkit-animation: spinAnimation 1.5s linear 0s infinite;
-}
-
-
-@keyframes spinAnimation {
-  from {
-    transform: rotate(0deg)
-  }
-  to {
-    transform: rotate(360deg)
-  }
-}
-@-webkit-keyframes spinAnimation {
-  from {
-    transform: rotate(0deg)
-  }
-  to {
-    transform: rotate(360deg)
-  }
 }
 
 @media only screen and (max-width: 800px) and (min-width: 300px) {
