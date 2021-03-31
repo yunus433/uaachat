@@ -53,17 +53,14 @@ const sessionOptions = session({
 app.use(sessionOptions);
 
 app.use((req, res, next) => {
-  req.io = io;
+  if (!req.query || typeof req.query != 'object')
+    req.query = {};
   next();
 });
 
 app.use('/', indexRouteController);
 app.use('/app', appRouteController);
 app.use('/auth', authRouteController);
-
-io.on('connection', (socket) => {
-  sockets(socket, io);
-});
 
 server.listen(PORT, () => {
   console.log(`Server is on port ${PORT}`);

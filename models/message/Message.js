@@ -195,7 +195,6 @@ MessageSchema.statics.findMessageById = function (data, callback) {
 
 
 
-
 MessageSchema.statics.updateReadBy = function (id, user_id, callback) {
   // Find the document with the given id and push the user to read_by array
   // Return an error if it exists
@@ -217,7 +216,7 @@ MessageSchema.statics.updateReadBy = function (id, user_id, callback) {
   });
 };
 
-MessageSchema.statics.getLatestMessage = function (id, callback) {
+MessageSchema.statics.getLatestMessage = function (id, data, callback) {
   // Find the message with the given chat_id and latest created_at time, return it or an error if it exists
 
   if (!id || !validator.isMongoId(id.toString()))
@@ -231,7 +230,23 @@ MessageSchema.statics.getLatestMessage = function (id, callback) {
     })
     .sort({ created_at: -1 })
     .limit(1) // Take only the latest
-    .then(messages => callback(null, messages.length ? messages[0] : null))
+    .then(messages => {
+      if (!messages.length)
+        return callback(null);
+
+      if (data) {
+        formatMessage({
+          message: messages[0],
+          timezone: !isNaN(parseInt(data.timezone)) ? parseInt(data.timezone) : null
+        }, (err, message) => {
+          if (err) return callback(err);
+  
+          return callback(null, message);
+        });
+      } else {
+        return callback(null, messages[0]);
+      }
+    })
     .catch(() => callback('database_error'));
 };
 

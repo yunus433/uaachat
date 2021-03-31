@@ -4,6 +4,7 @@ const router = express.Router();
 const isConfirmed = require('../middleware/isConfirmed');
 const isLoggedIn = require('../middleware/isLoggedIn');
 
+const chatGetController = require('../controllers/app/chat/get');
 const chatsGetController = require('../controllers/app/chats/get');
 const contactsGetController = require('../controllers/app/contacts/get');
 const indexGetController = require('../controllers/app/index/get');
@@ -17,6 +18,12 @@ router.get(
     isLoggedIn,
     isConfirmed,
     indexGetController
+);
+router.get(
+  '/chat',
+    isLoggedIn,
+    isConfirmed,
+    chatGetController
 );
 router.get(
   '/chats',

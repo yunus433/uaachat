@@ -111,7 +111,7 @@ ChatSchema.statics.updateLastMessageTime = function (id, callback) {
 
   const Chat = this;
 
-  Message.getLatestMessage(id, (err, message) => {
+  Message.getLatestMessage(id, null, (err, message) => {
     if (err) return callback(err);
 
     if (!message)
@@ -123,12 +123,12 @@ ChatSchema.statics.updateLastMessageTime = function (id, callback) {
       if (err) return callback('database_error');
 
       Chat.collection
-      .createIndex({
-        users_list: 1,
-        last_message_time: 1
-      })
-      .then(() => callback(null))
-      .catch(err => callback('indexing_error'));
+        .createIndex({
+          users_list: 1,
+          last_message_time: 1
+        })
+        .then(() => callback(null))
+        .catch(err => callback('indexing_error'));
     });
   });
 };
@@ -178,7 +178,7 @@ ChatSchema.statics.getChats = function (id, filters_data, callback) {
               if (err) return next('database_error');
               if (!user) return next(null, null);
 
-              Message.getLatestMessage(chat_id, (err, message) => {
+              Message.getLatestMessage(chat_id, filters_data, (err, message) => {
                 if (err) return next(err);
 
                 Message.getNotReadMessageNumberOfChat(chat_id, id, (err, number) => {
@@ -223,6 +223,38 @@ ChatSchema.statics.findChatById = function (id, callback) {
     if (err || !chat) return callback('document_not_found');
 
     return callback(null, chat);
+  });
+};
+
+ChatSchema.statics.findChatInfo = function (id, user_id, callback) {
+  // Find the chat with the given id, return it on the proper format for frontend or an error if it exists
+  
+  if (!id || !validator.isMongoId(id.toString()) || !user_id || !validator.isMongoId(user_id.toString()))
+    return callback('bad_request');
+
+  const Chat = this;
+
+  Chat.findOne({
+    _id: mongoose.Types.ObjectId(id.toString()),
+    is_group: false,
+    users_list: mongoose.Types.ObjectId(user_id.toString())
+  }, (err, chat) => {
+    if (err || !chat)
+      return callback('document_not_found');
+
+    const otherUserId = chat.users_list.find(id => id != mongoose.Types.ObjectId(user_id.toString()) && id != user_id.toString());
+
+    User.getUserById(otherUserId, (err, user) => {
+      if (err) return callback(err);
+
+      return callback(null, {
+        _id: chat._id,
+        user_id: user._id,
+        profile_photo: user.profile_photo,
+        name: user.name,
+        email: user.email
+      });
+    });
   });
 };
 
