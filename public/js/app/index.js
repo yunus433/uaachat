@@ -565,7 +565,7 @@ function createChatWrapperContent () {
         const chatInput = document.createElement('input');
         chatInput.classList.add('chat-input');
         chatInput.type = 'text';
-        chatInput.placeholder = response.messages.length ? 'Write your message' : 'Write your message to start the chat!';
+        chatInput.placeholder = 'Write your message to start the chat!';
         chatInputWrapper.appendChild(chatInput);
 
         chatWrapper.appendChild(chatInputWrapper);
