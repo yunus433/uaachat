@@ -3,15 +3,12 @@ const http = require('http');
 const path = require('path');
 const dotenv = require('dotenv');
 const favicon = require('serve-favicon');
-const helmet = require('helmet');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const socketIO = require('socket.io');
 
 const MongoStore = require('connect-mongo')(session);
-
-const sockets = require('./sockets/sockets');
 
 const app = express();
 const server = http.createServer(app);
@@ -33,7 +30,7 @@ mongoose.connect(mongoUri, { useNewUrlParser: true, auto_reconnect: true, useUni
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-// app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());

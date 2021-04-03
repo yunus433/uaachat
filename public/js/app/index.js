@@ -11,6 +11,7 @@ function giveError (error) {
 };
 
 function sendNotification (title, data, callback) {
+  return;
   if (!('Notification' in window))
     return;
 
@@ -24,6 +25,10 @@ function sendNotification (title, data, callback) {
       if (callback)
         callback(true);
     }
+
+    setTimeout(() => {
+      notification.close();
+    }, 1000);
   } else if (Notification.permission != 'denied') {
     Notification.requestPermission().then(function (permission) {
       if (permission == 'granted')

@@ -1,3 +1,13 @@
+/* 
+
+rgb(36, 52, 76) => dark blue
+rgb(246, 247, 251) => message gray
+rgb(228,246,246) => user message blue
+rgb(85, 197, 191) => seablue, for not read messages and send icon
+rgb(110,110,110) => font color
+
+*/
+
 .all-uploading-wrapper {
   width: 100vw;
   height: 100vh;
@@ -45,18 +55,18 @@
   width: 350px;
   min-width: 350px;
   height: 100vh;
-  border-right: 1px solid rgb(67, 80, 88);
+  /* border-right: 1px solid rgb(236, 236, 236); */
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  background-color: rgb(220, 210, 210);
+  background-color: rgb(36,52,76);
 }
 
 .profile-wrapper {
   width: 100%;
   height: 90px;
   min-height: 90px;
-  border-bottom: 1px solid rgb(67, 80, 88);
+  border-bottom: 1px solid rgb(236, 236, 236);
   display: flex;
   align-items: center;
   padding: 0px 15px;
@@ -80,32 +90,33 @@
   flex-direction: column;
 }
 .user-name {
-  color: rgb(67, 80, 88);
+  color: rgb(236, 236, 236);
   font-weight: 600;
   font-size: 14px;
   margin-bottom: 5px;
 }
 .user-email {
-  color: rgb(67, 80, 88);
+  color: rgb(236, 236, 236);
   font-weight: 400;
   font-size: 13px;
 }
 
 .search-wrapper {
   width: 100%;
-  height: 50px;
-  min-height: 50px;
-  border-bottom: 1px solid rgb(67, 80, 88);
+  height: 55px;
+  min-height: 55px;
+  border-bottom: 1px solid rgb(236, 236, 236);
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 3px 0px;
 }
 .search-inner-wrapper {
-  background-color: rgb(241, 242, 238);
+  background-color: rgb(26, 42, 66);
   width: calc(100% - 30px);
   height: calc(100% - 14px);
   border-radius: 30px;
-  border: 1px solid rgb(67, 80, 88);
+  /* border: 1px solid rgb(236, 236, 236); */
   display: flex;
   align-items: center;
   padding: 0px 15px;
@@ -113,7 +124,7 @@
 .search-inner-wrapper i {
   font-size: 14px;
   margin-right: 5px;
-  color: rgb(67, 80, 88);
+  color: rgb(236, 236, 236);
 }
 .search-chat-input {
   outline: none;
@@ -121,21 +132,24 @@
   background-color: transparent;
   font-size: 13px;
   flex: 1;
-  color: rgb(67, 80, 88);
+  color: rgb(236, 236, 236);
   font-weight: 600;
 }
 .search-chat-input::placeholder {
-  color: rgb(136, 136, 136);
+  color: rgb(200, 200, 200);
   opacity: 1;
   font-weight: 500;
 }
 
 .chat-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   flex: 1;
   height: 100vh;
-  background-color: rgb(241, 242, 238);
-  overflow-x: hidden;
-  overflow-y: scroll;
+  background-color: rgb(254, 254, 254);
+  overflow: hidden;
+  z-index: 2;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -143,19 +157,19 @@
   width: 100%;
   height: 50px;
   min-height: 50px;
-  border-bottom: 1px solid rgb(67, 80, 88);
+  /* border-bottom: 1px solid rgb(236, 236, 236); */
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0px 15px;
 }
 .change-chat-title {
-  color: rgb(67, 80, 88);
+  color: rgb(236, 236, 236);
   font-weight: 600;
   font-size: 14px;
 }
 .change-chat-subtitle {
-  color: rgb(67, 80, 88);
+  color: rgb(236, 236, 236);
   font-weight: 400;
   font-size: 12px;
 }
@@ -174,20 +188,22 @@
   padding: 0px 15px;
   height: 90px;
   min-height: 90px;
-  border-bottom: 1px solid rgb(67, 80, 88);
+  /* border-bottom: 1px solid rgb(236, 236, 236); */
   display: flex;
   align-items: center;
   cursor: pointer;
 }
 .selected-chat {
-  background-color: rgb(200, 190, 190) !important;
+  background-color: rgb(26, 42, 66) !important;
 }
 .each-change-chat-wrapper:hover {
-  background-color: rgb(200, 190, 190);
+  background-color: rgb(26, 42, 66);
 }
 .each-change-chat-profile-photo {
   width: 50px;
   height: 50px;
+  min-height: 50px;
+  min-width: 50px;
   border-radius: 25px;
   margin-right: 15px;
   overflow: hidden;
@@ -197,14 +213,14 @@
 }
 .each-change-chat-profile-photo img {
   width: 100%;
+  min-height: 100%;
 }
 .each-change-chat-info-wrapper, .chat-info-wrapper {
-  width: calc(100% - 65px);
+  width: calc(100% - 80px);
   display: flex;
   flex-direction: column;
 }
 .each-chat-info-title-wrapper {
-  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -213,7 +229,7 @@
 }
 .each-chat-name {
   font-size: 14px;
-  color: rgb(67, 80, 88);
+  color: rgb(236, 236, 236);
   font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -223,15 +239,15 @@
 .each-chat-last-message-time {
   min-width: fit-content;
   margin-left: 5px;
-  color: rgb(67, 80, 88);
+  color: rgb(236, 236, 236);
   font-weight: 400;
-  font-size: 12px;
+  font-size: 13px;
 }
 .each-chat-last-message {
   width: 100%;
   height: 20px;
   font-size: 14px;
-  color: rgb(67, 80, 88);
+  color: rgb(236, 236, 236);
   font-weight: 400;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -252,7 +268,7 @@
   height: 20px;
   min-width: 20px;
   border-radius: 10px;
-  background-color: rgb(115, 90, 160);
+  background-color: rgb(85, 197, 191);
   color: rgb(241, 242, 238);
   font-size: 11px;
   font-weight: 600;
@@ -263,29 +279,21 @@
   overflow: hidden;
 }
 
-.chat-wrapper {
-  flex: 1;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  overflow: hidden;
-  z-index: 2;
-}
 .choose-chat-text {
   align-self: center;
   justify-self: center;
-  color: rgba(67, 80, 88, 0.7);
+  color: rgb(36, 52, 76);
   font-weight: 600;
   font-size: 16px;
 }
 
 .chat-profile-wrapper {
-  background-color: rgb(220, 210, 210);
+  background-color: rgb(36,52,76);
   width: 100%;
   height: 90px;
   min-height: 90px;
-  border-bottom: 1px solid rgb(67, 80, 88);
+  border-bottom: 1px solid rgb(236, 236, 236);
+  border-left: 1px solid rgb(236, 236, 236);
   display: flex;
   align-items: center;
 }
@@ -293,7 +301,7 @@
   margin-left: 20px;
   margin-right: -5px;
   font-size: 22px;
-  color: rgb(67, 80, 88);
+  color: rgb(236, 236, 236);
   cursor: pointer;
   display: none !important;
 }
@@ -316,12 +324,12 @@
   flex-direction: column;
 }
 .chat-name {
-  color: rgb(67, 80, 88);
+  color: rgb(236, 236, 236);
   font-weight: 600;
   font-size: 16px;
 }
 .chat-email {
-  color: rgb(67, 80, 88);
+  color: rgb(236, 236, 236);
   font-weight: 400;
   font-size: 14px;
   margin-top: 5px;
@@ -341,22 +349,22 @@
 .message-day {
   margin: 15px 0px;
   align-self: center;
-  background-color: rgba(115, 90, 160, 0.2);
+  background-color: rgb(246, 247, 251);
   padding: 5px 10px;
   border-radius: 5px;
   font-size: 14px;
-  color: rgb(67, 80, 88);
+  color: rgb(36, 52, 76);
   font-weight: 600;
 }
 
 .each-message {
   min-height: fit-content;
   height: fit-content;
-  padding: 5px 10px;
+  padding: 6px 10px;
   border-radius: 5px;
   max-width: 50%;
-  background-color: rgb(115, 90, 160);
-  margin-bottom: 2px;
+  background-color: rgb(246, 247, 251);
+  margin-bottom: 3px;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -368,8 +376,8 @@
   content: "";
   width: 0px;
   height: 0px;
-  border-top: 5px solid rgb(115, 90, 160);
-  border-right: 5px solid rgb(115, 90, 160);
+  border-top: 5px solid rgb(246,247,251);
+  border-right: 5px solid rgb(246,247,251);
   border-left: 5px solid transparent;
   border-bottom: 5px solid transparent;
   border-top-left-radius: 3px;
@@ -378,14 +386,15 @@
   position: absolute;
 }
 .each-message-content {
-  color: rgb(241, 242, 238);
+  color: rgb(26, 42, 66);
   font-weight: 500;
   font-size: 14px;
+  overflow: hidden;
 }
 .each-message-time {
   display: flex;
   align-items: center;
-  color: rgb(241, 242, 238);
+  color: rgb(26, 42, 66);
   font-weight: 400;
   font-size: 12px;
   margin-left: auto;
@@ -408,8 +417,8 @@
   padding: 5px 10px;
   border-radius: 5px;
   max-width: 50%;
-  background-color: rgb(250, 250, 250);
-  margin-bottom: 2px;
+  background-color: rgb(228, 246, 246);
+  margin-bottom: 3px;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -422,8 +431,8 @@
   content: "";
   width: 0px;
   height: 0px;
-  border-top: 5px solid rgb(250, 250, 250);
-  border-left: 5px solid rgb(250, 250, 250);
+  border-top: 5px solid rgb(228, 246, 246);
+  border-left: 5px solid rgb(228, 246, 246);
   border-right: 5px solid transparent;
   border-bottom: 5px solid transparent;
   border-top-right-radius: 3px;
@@ -432,15 +441,15 @@
   position: absolute;
 }
 .each-user-message-content {
-  color: rgb(67, 80, 88);
+  color: rgb(36, 52, 76);
   font-weight: 600;
   font-size: 14px;
-  word-break: break-all;
+  overflow: hidden;
 }
 .each-user-message-time {
   display: flex;
   align-items: center;
-  color: rgb(67, 80, 88);
+  color: rgb(36, 52, 76);
   font-weight: 400;
   font-size: 13px;
   margin-left: auto;
@@ -449,39 +458,41 @@
 .each-user-message-time div {
   display: flex;
   align-items: center;
-  margin-left: 8px;
+  margin-left: 10px;
 }
 .each-user-message-time div i {
   margin-left: -5px;
   font-size: 10px;
-  color: rgb(115, 90, 160);
+  color: rgb(85, 197, 191);
 }
 .not-read-message-icon {
-  color: rgb(200, 190, 190) !important;
+  color: rgba(36, 52, 76, 0.4) !important;
 }
 
 .chat-input-wrapper {
-  border-top: 1px solid rgb(67, 80, 88);
+  border-top: 1px solid rgb(236, 236, 236);
+  border-left: 1px solid rgb(236, 236, 236);
   padding: 0px 15px;
-  background-color: rgb(220, 210, 210);
+  padding-top: 5px;
+  background-color: rgb(36, 52, 76);
   display: flex;
   align-items: center;
-  height: 70px;
+  height: 80px;
 }
 .chat-input {
-  background-color: rgb(241, 242, 238);
+  background-color: rgb(26, 42, 66);
   font-size: 14px;
-  border: 1px solid rgb(67, 80, 88);
+  border: 1px solid rgb(236, 236, 236);
   flex: 1;
-  height: calc(100% - 20px);
+  height: calc(100% - 30px);
   border-radius: 30px;
   padding: 0px 15px;
   outline: none;
-  color: rgb(67, 80, 88);
+  color: rgb(236, 236, 236);
   font-weight: 600;
 }
 .chat-input::placeholder {
-  color: rgb(136, 136, 136);
+  color: rgb(200, 200, 200);
   opacity: 1;
   font-weight: 500;
 }
