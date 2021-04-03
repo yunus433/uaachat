@@ -559,8 +559,6 @@ function createChatWrapperContent () {
         chatWrapper.appendChild(chatMessagesWrapper);
 
         last_message = null;
-        for (let i = 0; i < response.messages.length; i++)
-          createMessage(response.messages[i]);
 
         const chatInputWrapper = document.createElement('div');
         chatInputWrapper.classList.add('chat-input-wrapper');
