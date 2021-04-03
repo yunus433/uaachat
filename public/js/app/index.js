@@ -463,71 +463,117 @@ function createChatWrapperContent () {
     const messages = response.messages;
 
     serverRequest(`/app/chat?_id=${chat_id}`, 'GET', {}, response => {
-      if (!response.success)
-        giveError(response.error);
+      if (response.success) {
+        const chat = response.chat;
+        global_chat = chat;
+  
+        chatWrapper.innerHTML = '';
+        if (document.querySelector('.selected-chat'))
+          document.querySelector('.selected-chat').classList.remove('selected-chat');
+        document.getElementById(chat_id).classList.add('selected-chat');
+    
+        is_first_chat = messages.length ? false : true;
+    
+        const chatProfileWrapper = document.createElement('div');
+        chatProfileWrapper.classList.add('chat-profile-wrapper');
+    
+        const chatGoBackButton = document.createElement('i');
+        chatGoBackButton.classList.add('fas');
+        chatGoBackButton.classList.add('fa-chevron-left');
+        chatGoBackButton.classList.add('chat-go-back-button');
+        chatProfileWrapper.appendChild(chatGoBackButton);
+    
+        const chatProfilePhoto = document.createElement('div');
+        chatProfilePhoto.classList.add('chat-profile-photo');
+        const img = document.createElement('img');
+        img.src = chat.profile_photo;
+        img.alt = chat.name;
+        chatProfilePhoto.appendChild(img);
+        chatProfileWrapper.appendChild(chatProfilePhoto);
+    
+        const chatInfoWrapper = document.createElement('div');
+        chatInfoWrapper.classList.add('chat-info-wrapper');
+    
+        const chatName = document.createElement('span');
+        chatName.classList.add('chat-name');
+        chatName.innerHTML = chat.name;
+        chatInfoWrapper.appendChild(chatName);
+    
+        const chatEmail = document.createElement('span');
+        chatEmail.classList.add('chat-email');
+        chatEmail.innerHTML = chat.email.split('@')[0];
+        chatInfoWrapper.appendChild(chatEmail);
+    
+        chatProfileWrapper.appendChild(chatInfoWrapper);
+    
+        chatWrapper.appendChild(chatProfileWrapper);
+    
+        const chatMessagesWrapper = document.createElement('div');
+        chatMessagesWrapper.classList.add('chat-messages-wrapper');
+    
+        chatWrapper.appendChild(chatMessagesWrapper);
+    
+        for (let i = 0; i < messages.length; i++)
+          createMessage(messages[i]);
+    
+        const chatInputWrapper = document.createElement('div');
+        chatInputWrapper.classList.add('chat-input-wrapper');
+    
+        const chatInput = document.createElement('input');
+        chatInput.classList.add('chat-input');
+        chatInput.type = 'text';
+        chatInput.placeholder = messages.length ? 'Write your message' : 'Write your message to start the chat!';
+        chatInputWrapper.appendChild(chatInput);
+    
+        chatWrapper.appendChild(chatInputWrapper);
+      } else if (response.error == 'document_not_found') {
+        const chatProfileWrapper = document.createElement('div');
+        chatProfileWrapper.classList.add('chat-profile-wrapper');
+        const chatGoBackButton = document.createElement('i');
+        chatGoBackButton.classList.add('fas');
+        chatGoBackButton.classList.add('fa-chevron-left');
+        chatGoBackButton.classList.add('chat-go-back-button');
+        chatProfileWrapper.appendChild(chatGoBackButton);
+        const chatProfilePhoto = document.createElement('div');
+        chatProfilePhoto.classList.add('chat-profile-photo');
+        const img = document.createElement('img');
+        img.src = document.getElementById(chat_id).childNodes[0].childNodes[0].src;
+        img.alt = document.getElementById(chat_id).childNodes[0].childNodes[0].alt;
+        chatProfilePhoto.appendChild(img);
+        chatProfileWrapper.appendChild(chatProfilePhoto);
+        const chatInfoWrapper = document.createElement('div');
+        chatInfoWrapper.classList.add('chat-info-wrapper');
+        const chatName = document.createElement('span');
+        chatName.classList.add('chat-name');
+        chatName.innerHTML = document.getElementById(chat_id).childNodes[1].childNodes[0].childNodes[0].innerHTML;
+        chatInfoWrapper.appendChild(chatName);
+        const chatEmail = document.createElement('span');
+        chatEmail.classList.add('chat-email');
+        chatEmail.innerHTML = document.getElementById(chat_id).childNodes[1].childNodes[1].childNodes[0].innerHTML;
+        chatInfoWrapper.appendChild(chatEmail);
+        chatProfileWrapper.appendChild(chatInfoWrapper);
+        chatWrapper.appendChild(chatProfileWrapper);
+        const chatMessagesWrapper = document.createElement('div');
+        chatMessagesWrapper.classList.add('chat-messages-wrapper');
 
-      const chat = response.chat;
-      global_chat = chat;
+        chatWrapper.appendChild(chatMessagesWrapper);
 
-      chatWrapper.innerHTML = '';
-      if (document.querySelector('.selected-chat'))
-        document.querySelector('.selected-chat').classList.remove('selected-chat');
-      document.getElementById(chat_id).classList.add('selected-chat');
-  
-      is_first_chat = messages.length ? false : true;
-  
-      const chatProfileWrapper = document.createElement('div');
-      chatProfileWrapper.classList.add('chat-profile-wrapper');
-  
-      const chatGoBackButton = document.createElement('i');
-      chatGoBackButton.classList.add('fas');
-      chatGoBackButton.classList.add('fa-chevron-left');
-      chatGoBackButton.classList.add('chat-go-back-button');
-      chatProfileWrapper.appendChild(chatGoBackButton);
-  
-      const chatProfilePhoto = document.createElement('div');
-      chatProfilePhoto.classList.add('chat-profile-photo');
-      const img = document.createElement('img');
-      img.src = chat.profile_photo;
-      img.alt = chat.name;
-      chatProfilePhoto.appendChild(img);
-      chatProfileWrapper.appendChild(chatProfilePhoto);
-  
-      const chatInfoWrapper = document.createElement('div');
-      chatInfoWrapper.classList.add('chat-info-wrapper');
-  
-      const chatName = document.createElement('span');
-      chatName.classList.add('chat-name');
-      chatName.innerHTML = chat.name;
-      chatInfoWrapper.appendChild(chatName);
-  
-      const chatEmail = document.createElement('span');
-      chatEmail.classList.add('chat-email');
-      chatEmail.innerHTML = chat.email.split('@')[0];
-      chatInfoWrapper.appendChild(chatEmail);
-  
-      chatProfileWrapper.appendChild(chatInfoWrapper);
-  
-      chatWrapper.appendChild(chatProfileWrapper);
-  
-      const chatMessagesWrapper = document.createElement('div');
-      chatMessagesWrapper.classList.add('chat-messages-wrapper');
-  
-      chatWrapper.appendChild(chatMessagesWrapper);
-  
-      for (let i = 0; i < messages.length; i++)
-        createMessage(messages[i]);
-  
-      const chatInputWrapper = document.createElement('div');
-      chatInputWrapper.classList.add('chat-input-wrapper');
-  
-      const chatInput = document.createElement('input');
-      chatInput.classList.add('chat-input');
-      chatInput.type = 'text';
-      chatInput.placeholder = messages.length ? 'Write your message' : 'Write your message to start the chat!';
-      chatInputWrapper.appendChild(chatInput);
-  
-      chatWrapper.appendChild(chatInputWrapper);
+        last_message = null;
+        for (let i = 0; i < response.messages.length; i++)
+          createMessage(response.messages[i]);
+
+        const chatInputWrapper = document.createElement('div');
+        chatInputWrapper.classList.add('chat-input-wrapper');
+        const chatInput = document.createElement('input');
+        chatInput.classList.add('chat-input');
+        chatInput.type = 'text';
+        chatInput.placeholder = response.messages.length ? 'Write your message' : 'Write your message to start the chat!';
+        chatInputWrapper.appendChild(chatInput);
+
+        chatWrapper.appendChild(chatInputWrapper);
+      } else {
+        return giveError(response.error);
+      }
     });
   });
 };
@@ -585,6 +631,16 @@ window.onload = () => {
     if (event.target.classList.contains('chat-go-back-button')) {
       document.querySelector('.menu-wrapper').style.zIndex = 3;
     }
+
+    // if (event.target.classList.contains('profile-wrapper') || event.target.parentNode.classList.contains('profile-wrapper') || (event.target.parentNode.parentNode && event.target.parentNode.parentNode.classList.contains('profile-wrapper'))) {
+    //   document.querySelector('.edit-profile-wrapper').classList.remove('close-left-animation-class');
+    //   document.querySelector('.edit-profile-wrapper').classList.add('open-right-animation-class');
+    // }
+
+    // if (event.target.classList.contains('edit-profile-go-back-button') || event.target.parentNode.classList.contains('edit-profile-go-back-button')) {
+    //   document.querySelector('.edit-profile-wrapper').classList.remove('open-right-animation-class');
+    //   document.querySelector('.edit-profile-wrapper').classList.add('close-left-animation-class');
+    // }
   });
 
   document.addEventListener('keydown', event => {
