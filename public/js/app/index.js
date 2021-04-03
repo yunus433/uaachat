@@ -463,11 +463,11 @@ function createChatWrapperContent () {
     const messages = response.messages;
 
     serverRequest(`/app/chat?_id=${chat_id}`, 'GET', {}, response => {
+      chatWrapper.innerHTML = '';
       if (response.success) {
         const chat = response.chat;
         global_chat = chat;
   
-        chatWrapper.innerHTML = '';
         if (document.querySelector('.selected-chat'))
           document.querySelector('.selected-chat').classList.remove('selected-chat');
         document.getElementById(chat_id).classList.add('selected-chat');
@@ -527,6 +527,7 @@ function createChatWrapperContent () {
     
         chatWrapper.appendChild(chatInputWrapper);
       } else if (response.error == 'document_not_found') {
+        is_first_chat = true;
         const chatProfileWrapper = document.createElement('div');
         chatProfileWrapper.classList.add('chat-profile-wrapper');
         const chatGoBackButton = document.createElement('i');

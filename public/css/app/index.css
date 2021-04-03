@@ -51,6 +51,169 @@ rgb(110,110,110) => font color
   background-color: rgb(241, 242, 238);
 }
 
+.edit-profile-wrapper {
+  width: 350px;
+  min-width: 350px;
+  height: 100vh;
+  position: absolute;
+  z-index: 10;
+  left: -350px;
+  background-color: rgb(36, 52, 76);
+  overflow-y: scroll;
+}
+.open-right-animation-class {
+  animation: open-right 0.5s ease-in-out 0s 1 forwards;
+  -webkit-animation: open-right 0.5s ease-in-out 0s 1 forwards;
+}
+.close-left-animation-class {
+  animation: close-left 0.5s ease-in-out 0s 1 forwards;
+  -webkit-animation: close-left 0.5s ease-in-out 0s 1 forwards;
+}
+.edit-profile-inner-wrapper {
+  padding: 20px 30px;
+  padding-bottom: 60px;
+  height: fit-content;
+  min-height: fit-content;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+@keyframes open-right {
+  from {
+    left: -350px;
+  }
+  to {
+    left: 0px;
+  }
+}
+@-webkit-keyframes open-right {
+  from {
+    left: -350px;
+  }
+  to {
+    left: 0px;
+  }
+}
+
+@keyframes close-left {
+  from {
+    left: 0px;
+  }
+  to {
+    left: -350px;
+  }
+}
+@-webkit-keyframes close-left {
+  from {
+    left: 0px;
+  }
+  to {
+    left: -350px;
+  }
+}
+
+.edit-profile-go-back-button {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.edit-profile-go-back-button i {
+  color: rgb(236, 236, 236);
+  margin-right: 8px;
+  font-size: 15px;
+}
+.edit-profile-go-back-button span {
+  color: rgb(236, 236, 236);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.edit-profile-image-wrapper {
+  align-self: center;
+  width: 200px;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+.edit-profile-image-wrapper img {
+  width: 100%;
+  min-height: 100%;
+}
+.edit-profile-image-wrapper span {
+  height: 40px;
+  width: 200px;
+  margin-top: -40px;
+  background-color: rgba(36, 52, 76, 0.9);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 7px;
+  color: rgb(254, 254, 254);
+  font-size: 13px;
+}
+
+.edit-profile-input-title {
+  color: rgb(254, 254, 254);
+  font-size: 14px;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+.edit-profile-input {
+  width: 100%;
+  outline: none;
+  border: none;
+  font-size: 13px;
+  color: rgb(236, 236, 236);
+  font-weight: 600;
+  background-color: rgb(26, 42, 66);
+  border-radius: 30px;
+  padding: 10px 10px;
+  margin-bottom: 20px;
+}
+.edit-profile-input-long {
+  width: 100%;
+  height: 150px;
+  outline: none;
+  border: none;
+  font-size: 13px;
+  color: rgb(236, 236, 236);
+  font-weight: 600;
+  background-color: rgb(26, 42, 66);
+  border-radius: 15px;
+  padding: 10px 10px;
+  margin-bottom: 20px;
+  resize: none;
+  line-height: 20px;
+}
+.edit-profile-input::placeholder, .edit-profile-input-long::placeholder {
+  color: rgb(200, 200, 200);
+  opacity: 0.8;
+  font-weight: 500;
+}
+.edit-profile-button {
+  margin-left: auto;
+  background-color: rgb(254, 254, 254);
+  color: rgb(36, 52, 76);
+  font-weight: 800;
+  font-size: 14px;
+  padding: 5px 15px;
+  cursor: pointer;
+  border-radius: 20px;
+}
+.edit-profile-button:hover {
+  box-shadow: 0 0 10px rgb(26, 42, 66);
+}
+
 .menu-wrapper {
   width: 350px;
   min-width: 350px;
@@ -71,6 +234,7 @@ rgb(110,110,110) => font color
   align-items: center;
   padding: 0px 15px;
   cursor: pointer;
+  overflow-y: scroll;
 }
 .user-profile-photo {
   width: 50px;
@@ -82,7 +246,8 @@ rgb(110,110,110) => font color
   justify-content: center;
 }
 .user-profile-photo img {
-  height: 100%;
+  width: 100%;
+  min-height: 100%;
 }
 .user-info-wrapper {
   margin-left: 15px;
